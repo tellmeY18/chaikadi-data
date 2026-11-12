@@ -40,6 +40,7 @@ test('build output: manifest, bundle, permalinks, JSON-LD, CNAME, landing page',
   assert.equal(bundle.places[0].itemCount, bundle.places[0].menu.length);
   assert.equal(readFileSync(join(dir, 'CNAME'), 'utf8'), 'data.chaikadi.fyi\n');
   assert.ok(existsSync(join(dir, '.nojekyll')));
+  assert.match(readFileSync(join(dir, '_headers'), 'utf8'), /Access-Control-Allow-Origin: \*/);
   assert.match(readFileSync(join(dir, 'index.html'), 'utf8'), /manifest\.json/);
   const ld = JSON.parse(readFileSync(join(dir, 'places/in/kl/ernakulam/node-9000000000001.jsonld'), 'utf8'));
   assert.equal(ld['@type'], 'Menu');

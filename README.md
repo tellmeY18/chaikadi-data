@@ -86,7 +86,7 @@ deliberately beyond real OSM ranges. They cannot be updated through the forms.
 | `index/<country>-<state>-<city>.json` | city bundle: every place with `status` (`fresh` ≤ 90 days, `stale` ≤ 365, otherwise `unverified`, computed at build time), `itemCount` and `menu` |
 | `places/…/<type>-<id>.json` | permalink copy of each place file |
 | `places/…/<type>-<id>.jsonld` | schema.org `Menu` / `MenuSection` / `MenuItem` / `Offer` export |
-| `index.html`, `CNAME`, `.nojekyll` | landing page and Pages configuration |
+| `index.html`, `CNAME`, `.nojekyll`, `_headers` | landing page; Pages configuration; CORS and cache headers for Cloudflare Pages |
 
 Builds are deterministic for a given date and commit: unchanged data gives
 identical bundle bytes and hashes. Apps verify each bundle against the

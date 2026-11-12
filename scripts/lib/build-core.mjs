@@ -71,6 +71,13 @@ export function buildDist({ root, outDir, date = todayUTC(), commit = 'unknown' 
   write('manifest.json', `${JSON.stringify(manifest, null, 2)}\n`);
   write('CNAME', `${DATA_HOST}\n`);
   write('.nojekyll', '');
+  // Cloudflare Pages headers (ignored by GitHub Pages, which already sends
+  // ACAO: *). CORS for the app; short caching so updates reach apps quickly;
+  // no-transform stops proxies from injecting scripts (e.g. analytics beacons).
+  write('_headers', [
+    '/*', '  Access-Control-Allow-Origin: *', '  X-Content-Type-Options: nosniff', '  Cache-Control: public, max-age=300, no-transform',
+    '/manifest.json', '  ! Cache-Control', '  Cache-Control: public, max-age=60, no-transform', '',
+  ].join('\n'));
   write('index.html', `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Chaikadi menu library data</title>
