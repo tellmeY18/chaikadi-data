@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 2,
+  "id": "sample-chai-corner-kaloor",
+  "name": "Sample Chai Corner, Kaloor",
+  "city": "in/kl/ernakulam",
+  "kind": "tea-stall",
+  "osm": {
+    "type": "node",
+    "id": 9000000000001,
+    "relation": "is"
+  },
+  "location": {
+    "area": "Kaloor"
+  },
+  "currency": "INR",
+  "tax": {
+    "included": true
+  },
+  "hours": [
+    {
+      "open": "06:00",
+      "close": "21:00"
+    }
+  ],
+  "sample": true,
+  "source": "menu-board",
+  "sections": [
+    {
+      "id": "tea",
+      "name": "Tea",
+      "items": [
+        {
+          "id": "chai",
+          "name": "Chai",
+          "category": "Tea",
+          "price": 12,
+          "diet": "veg"
+        },
+        {
+          "id": "masala-chai",
+          "name": "Masala Chai",
+          "category": "Tea",
+          "price": 15,
+          "diet": "veg"
+        },
+        {
+          "id": "ginger-chai",
+          "name": "Ginger Chai",
+          "category": "Tea",
+          "price": 15,
+          "diet": "veg"
+        },
+        {
+          "id": "black-tea",
+          "name": "Black Tea",
+          "category": "Tea",
+          "price": 10,
+          "diet": "vegan"
+        }
+      ]
+    },
+    {
+      "id": "coffee",
+      "name": "Coffee",
+      "items": [
+        {
+          "id": "filter-coffee",
+          "name": "Filter Coffee",
+          "category": "Coffee",
+          "price": 18,
+          "diet": "veg"
+        }
+      ]
+    },
+    {
+      "id": "snacks",
+      "name": "Snacks",
+      "hours": [
+        {
+          "open": "15:00",
+          "close": "19:00"
+        }
+      ],
+      "note": "Fried fresh in the evening.",
+      "items": [
+        {
+          "id": "pazham-pori",
+          "name": "Pazham Pori",
+          "localName": "പഴംപൊരി",
+          "category": "Snacks",
+          "price": 15,
+          "diet": "veg"
+        },
+        {
+          "id": "parippu-vada",
+          "name": "Parippu Vada",
+          "category": "Snacks",
+          "price": 10,
+          "diet": "vegan",
+          "spice": 1
+        },
+        {
+          "id": "egg-puffs",
+          "name": "Egg Puffs",
+          "category": "Snacks",
+          "price": 25,
+          "diet": "egg"
+        }
+      ]
+    }
+  ],
+  "last_confirmed": "2026-11-01"
+}

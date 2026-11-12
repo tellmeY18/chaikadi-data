@@ -57,7 +57,9 @@ export function checkFile(root, relPath, { today = todayUTC() } = {}) {
   return { errors, place };
 }
 
-// Full or partial validation. Duplicate-id detection always uses the whole repo.
+// Full or partial validation. Duplicate checks always use the whole repo: two
+// files may not both claim to BE the same OSM object (relation "is"); several
+// places may be "inside" the same building.
 export function validateRepo(root, { files, today = todayUTC() } = {}) {
   const all = listPlaceFiles(root);
   const targets = files ? files.filter(f => all.includes(f)) : all;
@@ -65,17 +67,18 @@ export function validateRepo(root, { files, today = todayUTC() } = {}) {
   for (const file of targets) results.set(file, checkFile(root, file, { today }));
   const owners = new Map();
   for (const file of all) {
-    let id;
-    if (results.has(file)) id = results.get(file).place?.id;
-    else { try { id = JSON.parse(readFileSync(join(root, file), 'utf8')).id; } catch { /* reported in full mode */ } }
-    if (typeof id !== 'string') continue;
-    owners.set(id, [...(owners.get(id) || []), file]);
+    let place;
+    if (results.has(file)) place = results.get(file).place;
+    else { try { place = JSON.parse(readFileSync(join(root, file), 'utf8')); } catch { /* reported in full mode */ } }
+    if (place?.osm?.relation !== 'is' || !place.osm.type || !place.osm.id) continue;
+    const key = `${place.osm.type}/${place.osm.id}`;
+    owners.set(key, [...(owners.get(key) || []), file]);
   }
   for (const [id, paths] of owners) {
     if (paths.length < 2) continue;
     for (const file of paths) {
       if (!results.has(file)) continue;
-      results.get(file).errors.push(`Duplicate place id "${id}" also used by ${paths.filter(p => p !== file).join(', ')}.`);
+      results.get(file).errors.push(`OSM object ${id} is already used as "is" by ${paths.filter(p => p !== file).join(', ')}. Use relation "inside" or "near" for places that share it.`);
     }
   }
   const errors = [];

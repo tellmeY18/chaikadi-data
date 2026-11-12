@@ -7,8 +7,8 @@ body:
     id: place-id
     attributes:
       label: Place ID
-      description: Optional, for example node/123456.
-      placeholder: node/123456
+      description: Optional, for example in/kl/ernakulam/place-id.
+      placeholder: in/kl/ernakulam/place-id
   - type: dropdown
     id: kind
     attributes:

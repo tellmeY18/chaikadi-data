@@ -15,7 +15,7 @@ and see how fresh the prices are.
   other platform or website**, and do not copy from other people's photos.
 - **OpenStreetMap by ID only.** OSM data is licensed ODbL, which is not
   compatible with CC0. Each place file references an OSM object by its ID
-  (`node/123456`) so apps can link to it, but **do not copy OSM tags, names from
+  (`node/123456`) with how it relates to the place (`is`, `inside`, `near`), but **do not copy OSM tags, names from
   OSM, opening hours, addresses or coordinates into this repository.**
 - **No personal data.** No contributor names or emails in data files, no phone
   numbers, links, emails or photos. Git history is the only record of who
@@ -28,64 +28,147 @@ The easiest way is an issue form: **Add a place**, **Update a menu** or
 workflow turns it into a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md)
 for pull requests by hand.
 
-## File format (schemaVersion 1)
+## File format (schemaVersion 2)
 
-`places/<country>/<state>/<city>/<osm-type>-<osm-id>.json`, for example
-`places/in/kl/ernakulam/node-123456.json`:
+`places/<country>/<state>/<city>/<place-id>.json`, for example
+`places/in/kl/ernakulam/smart-foodie-kitchen-cyber-green.json`. The place id is a
+lowercase slug, unique within its city; the app refers to a place as
+`<city>/<place-id>`. A trimmed example with every kind of field:
 
 ```json
 {
-  "schemaVersion": 1,
-  "id": "node/123456",
-  "name": "Kadavanthra Chaikadi",
+  "schemaVersion": 2,
+  "id": "smart-foodie-kitchen-cyber-green",
+  "name": "Smart Foodie Kitchen",
+  "localName": "…",
   "city": "in/kl/ernakulam",
+  "kind": "restaurant",
+  "osm": { "type": "way", "id": 1292036173, "relation": "inside" },
+  "location": { "building": "Prestige Cyber Green, Phase 1", "floor": "Ground floor", "area": "Kakkanad", "postcode": "682042" },
   "currency": "INR",
-  "menu": [
+  "tax": { "included": false, "note": "Prices exclusive of all taxes." },
+  "hours": [{ "days": ["mo", "tu", "we", "th", "fr"], "open": "08:00", "close": "19:00" }],
+  "note": "…",
+  "source": "printed-menu",
+  "sections": [
     {
-      "id": "chai",
-      "name": "Chai",
-      "category": "Tea",
-      "price": 12,
-      "veg": true,
-      "available": true
+      "id": "lunch",
+      "name": "Lunch",
+      "hours": [{ "open": "12:00", "close": "16:00" }],
+      "sections": [
+        {
+          "id": "main",
+          "name": "Main",
+          "items": [
+            {
+              "id": "chicken-biriyani",
+              "name": "Chicken Biriyani",
+              "category": "Meal",
+              "variants": [
+                { "id": "full", "name": "Full", "price": 200 },
+                { "id": "half", "name": "Half", "price": 160 }
+              ],
+              "diet": "non-veg",
+              "spice": 2
+            },
+            { "id": "fish-fry", "name": "Fish Fry", "category": "Meal", "priceStatus": "seasonal", "diet": "non-veg" },
+            { "id": "set-dosa", "name": "Set Dosa", "category": "Meal", "price": 60, "portion": "2 pcs" },
+            { "id": "grilled-paneer", "name": "Grilled Paneer", "category": "Meal", "price": 50, "addOn": true, "diet": "veg" },
+            { "id": "upma", "name": "Upma", "category": "Meal", "price": 60, "uncertain": true, "note": "Name partly illegible." }
+          ]
+        }
+      ]
     }
   ],
   "last_confirmed": "2026-11-12"
 }
 ```
 
+### Place
+
 | Field | Rule |
 | --- | --- |
-| `id` | `node`, `way` or `relation` / OSM number; must match the file name |
-| `name` | 1–80 characters |
+| `schemaVersion` | `2` |
+| `id` | lowercase slug ≤ 60, unique in the city; must match the file name |
+| `name`, `localName` | 1–80 characters; `localName` in the local script (optional) |
 | `city` | `country/state/city` lowercase slug; must match the folder |
-| `currency` | ISO 4217, e.g. `INR` |
+| `kind` | `tea-stall`, `cafe`, `restaurant`, `canteen`, `bakery`, `juice-shop`, `food-court-stall`, `hotel`, `other` (optional) |
+| `osm` | optional `{ type: node/way/relation, id, relation }`. `is`: the object is the place (only one file may claim it). `inside`: the place is inside it (an office building, a mall). `near`: closest landmark |
 | `wikidata` | optional, only if a Wikidata item truly exists |
-| `sample` | optional `true` for fictional sample data; apps show "Sample" |
-| `menu` | 1–150 items; `id` lowercase slug unique in the place |
-| `category` | `Tea`, `Coffee`, `Snacks`, `Meal` or `Other` |
-| `price` | number 0–10000, up to 2 decimals |
-| `veg`, `available` | optional booleans |
+| `location` | optional `building`, `floor`, `area` (≤ 80 chars) and `postcode`, written by you; never copied from OSM, never coordinates |
+| `currency` | ISO 4217, e.g. `INR` |
+| `tax` | optional `{ included: true/false, note? }`: whether printed prices include taxes |
+| `hours` | optional opening hours: `[{ days?: [mo…su], open: "HH:MM", close: "HH:MM" }]` (close may be earlier than open: past midnight; `24:00` allowed) |
+| `note` | optional, ≤ 160 characters |
+| `sample` | `true` only for fictional sample data; apps show "Sample" |
+| `source` | optional: `in-person`, `printed-menu`, `menu-board` or `bill` |
+| `sections` | 1–40 sections |
 | `last_confirmed` | ISO date the prices were confirmed; not in the future |
 
-Text may not contain coordinates, URLs, emails, phone numbers, HTML or control
-characters. Files are UTF-8, 2-space indented, keys in canonical order (the
-order above), LF line endings and a final newline: run `npm run format`.
+### Sections and items
 
-The three files under `places/in/kl/ernakulam/` with IDs `9000000000001`–`3`
-are **fictional samples** (`"sample": true`) for testing; those IDs are
-deliberately beyond real OSM ranges. They cannot be updated through the forms.
+A section has `id`, `name`, optional `hours` and `note`, and **either** `items`
+**or** `sections` (one level of subsections, each with `items`). Section and
+item ids are lowercase slugs, unique within the place. At most 300 items per place.
+
+| Item field | Rule |
+| --- | --- |
+| `id`, `name` | slug unique in the place; 1–80 characters |
+| `localName`, `description` | optional; ≤ 80 / ≤ 160 characters |
+| `category` | `Tea`, `Coffee`, `Drinks`, `Snacks`, `Meal`, `Dessert` or `Other` |
+| `price` | number 0–100000, up to 2 decimals |
+| `variants` | instead of `price`: 2–10 `{ id, name, price, portion? }`, e.g. Half / Full |
+| `priceStatus` | `market`, `seasonal` or `ask`: required when there is no `price` or `variants` |
+| `portion` | e.g. `2 pcs`, `250 ml` |
+| `diet` | `veg`, `vegan`, `egg` or `non-veg` (omit when unsure) |
+| `spice` | 0–3 |
+| `addOn` | `true`: only ordered with something else |
+| `available` | `false`: not served at the moment |
+| `uncertain` | `true` when the name or price could not be read with confidence; explain in `note` |
+| `note` | ≤ 160 characters |
+
+Text anywhere may not contain coordinates, URLs, emails, phone numbers, HTML or
+control characters. Files are UTF-8, 2-space indented, keys in canonical order
+(the order above), LF line endings and a final newline: run `npm run format`.
+
+The three `sample-*` files under `places/in/kl/ernakulam/` are **fictional**
+(`"sample": true`, OSM ids deliberately beyond real ranges) and show every
+feature. They cannot be updated through the forms.
+
+### Simple menu JSON
+
+Contributors can paste (issue form) or maintainers can import
+(`scripts/import-menu.mjs`) a simpler JSON menu:
+
+```json
+{ "restaurant": "…", "currency": "INR", "notes": "Prices exclusive of all taxes.",
+  "categories": [
+    { "name": "Breakfast", "hours": "08:00-12:00", "subcategories": [
+      { "name": "Breads", "items": [{ "name": "Set Dosa", "price": 60, "notes": "2 pcs" }] } ] },
+    { "name": "Lunch", "items": [
+      { "name": "Chicken Biriyani", "price": 200, "notes": "full" },
+      { "name": "Chicken Biriyani", "price": 160, "notes": "half" },
+      { "name": "Fish Fry", "price": null, "notes": "seasonal" } ] } ] }
+```
+
+It becomes sections with hours; neighbouring same-name items marked
+half/full/small/large become variants; notes like `2 pcs`, `add-on`, `seasonal`,
+`unavailable` and "illegible" become fields; a tax sentence becomes `tax`.
+Categories and diet are inferred only from clear keywords (e.g. Beverages →
+Tea/Coffee/Drinks, "chicken" → non-veg); otherwise diet is left out. Review the
+result before merging.
 
 ## Published files
 
-`npm run build` writes `dist/` (deployed to GitHub Pages at data.chaikadi.fyi):
+`npm run build` writes `dist/` (served at https://data.chaikadi.fyi):
 
 | Path | Contents |
 | --- | --- |
-| `manifest.json` | `schemaVersion`, `generatedAt`, `commit`, `freshness` thresholds, and per city `id`, `name`, `placeCount`, `url` (relative), `sha256`, `bytes` |
-| `index/<country>-<state>-<city>.json` | city bundle: every place with `status` (`fresh` ≤ 90 days, `stale` ≤ 365, otherwise `unverified`, computed at build time), `itemCount` and `menu` |
-| `places/…/<type>-<id>.json` | permalink copy of each place file |
-| `places/…/<type>-<id>.jsonld` | schema.org `Menu` / `MenuSection` / `MenuItem` / `Offer` export |
+| `v2/manifest.json` | `schemaVersion: 2`, `generatedAt`, `commit`, `freshness` thresholds, and per city `id`, `name`, `placeCount`, `url` (relative to `v2/`), `sha256`, `bytes` |
+| `v2/index/<country>-<state>-<city>.json` | full v2 places of the city (without `city`), plus build-time `status` (`fresh` ≤ 90 days, `stale` ≤ 365, otherwise `unverified`) and `itemCount` |
+| `manifest.json`, `index/<city>.json` | **v1 compatibility** for apps released before v2: only places that *are* an OSM object (`osm.relation: "is"`), flat priced items (variants as "Name (Half)", unpriced items left out), five categories |
+| `places/<city>/<id>.json` | permalink copy of each place file |
+| `places/<city>/<id>.jsonld` | schema.org `Menu` / nested `MenuSection` / `MenuItem` / `Offer` (one per variant) |
 | `index.html`, `CNAME`, `.nojekyll`, `_headers` | landing page; Pages configuration; CORS and cache headers for Cloudflare Pages |
 
 Builds are deterministic for a given date and commit: unchanged data gives
@@ -94,11 +177,11 @@ manifest's `sha256`. A bundle over 300 KB fails the build: split the city by
 locality (for example `in/kl/ernakulam-kaloor`). Deploys also run weekly so the
 build-time freshness status keeps moving.
 
-GitHub Pages sends `Access-Control-Allow-Origin: *`, so browsers can fetch the
-files cross-origin. Check with:
+The files are served with `Access-Control-Allow-Origin: *`, so browsers can
+fetch them cross-origin. Check with:
 
 ```sh
-curl -sI -H "Origin: https://chaikadi.fyi" https://data.chaikadi.fyi/manifest.json | grep -i access-control-allow-origin
+curl -sI -H "Origin: https://chaikadi.fyi" https://data.chaikadi.fyi/v2/manifest.json | grep -i access-control-allow-origin
 ```
 
 ## Scripts
@@ -110,6 +193,8 @@ npm run validate             # full validation; --changed <base-ref> for PRs
 npm run format               # rewrite files in canonical form
 npm run build -- --date 2026-11-12   # dist/ (date defaults to today, UTC)
 npm run stale-report -- --days 180
+node scripts/import-menu.mjs menu.json --city in/kl/ernakulam --date 2026-11-12 \
+  --osm way/1292036173 --relation inside --building "…" --area Kakkanad --postcode 682042 --write
 ```
 
 `validate` prints GitHub Actions annotations (`::error file=…`) in CI and a

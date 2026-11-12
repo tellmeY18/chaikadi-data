@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 2,
+  "id": "sample-snack-counter-edappally",
+  "name": "Sample Snack Counter, Edappally",
+  "city": "in/kl/ernakulam",
+  "kind": "cafe",
+  "osm": {
+    "type": "node",
+    "id": 9000000000002,
+    "relation": "is"
+  },
+  "location": {
+    "area": "Edappally"
+  },
+  "currency": "INR",
+  "sample": true,
+  "source": "printed-menu",
+  "sections": [
+    {
+      "id": "drinks",
+      "name": "Drinks",
+      "items": [
+        {
+          "id": "cutting-chai",
+          "name": "Cutting Chai",
+          "category": "Tea",
+          "price": 10,
+          "portion": "90 ml",
+          "diet": "veg"
+        },
+        {
+          "id": "lime-juice",
+          "name": "Lime Juice",
+          "category": "Drinks",
+          "price": 30,
+          "diet": "vegan"
+        }
+      ]
+    },
+    {
+      "id": "snacks",
+      "name": "Snacks",
+      "items": [
+        {
+          "id": "samosa",
+          "name": "Samosa",
+          "category": "Snacks",
+          "price": 15,
+          "portion": "1 pc",
+          "diet": "veg",
+          "spice": 2
+        },
+        {
+          "id": "uzhunnu-vada",
+          "name": "Uzhunnu Vada",
+          "category": "Snacks",
+          "price": 12,
+          "diet": "veg"
+        },
+        {
+          "id": "bun-maska",
+          "name": "Bun Maska",
+          "category": "Snacks",
+          "price": 25.5,
+          "diet": "veg",
+          "available": false
+        }
+      ]
+    }
+  ],
+  "last_confirmed": "2026-04-20"
+}
