@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 2,
+  "id": "sample-meals-hotel-fort-kochi",
+  "name": "Sample Meals Hotel, Fort Kochi",
+  "city": "in/kl/ernakulam",
+  "kind": "hotel",
+  "osm": {
+    "type": "way",
+    "id": 9000000000003,
+    "relation": "is"
+  },
+  "location": {
+    "area": "Fort Kochi"
+  },
+  "currency": "INR",
+  "tax": {
+    "included": false,
+    "note": "GST extra."
+  },
+  "sample": true,
+  "source": "printed-menu",
+  "sections": [
+    {
+      "id": "lunch",
+      "name": "Lunch",
+      "hours": [
+        {
+          "open": "12:00",
+          "close": "15:30"
+        }
+      ],
+      "sections": [
+        {
+          "id": "meals",
+          "name": "Meals",
+          "items": [
+            {
+              "id": "kerala-meals",
+              "name": "Kerala Meals",
+              "description": "Rice, sambar, two curries, thoran, pappadam and pickle.",
+              "category": "Meal",
+              "price": 90,
+              "diet": "veg"
+            },
+            {
+              "id": "fish-curry-meals",
+              "name": "Fish Curry Meals",
+              "category": "Meal",
+              "price": 140,
+              "diet": "non-veg",
+              "spice": 2
+            }
+          ]
+        },
+        {
+          "id": "extras",
+          "name": "Extras",
+          "items": [
+            {
+              "id": "fish-fry",
+              "name": "Fish Fry",
+              "category": "Meal",
+              "priceStatus": "seasonal",
+              "diet": "non-veg"
+            },
+            {
+              "id": "omelette",
+              "name": "Omelette",
+              "category": "Meal",
+              "variants": [
+                {
+                  "id": "single",
+                  "name": "Single",
+                  "price": 30
+                },
+                {
+                  "id": "double",
+                  "name": "Double",
+                  "price": 50
+                }
+              ],
+              "diet": "egg"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evening",
+      "name": "Evening",
+      "hours": [
+        {
+          "open": "16:00",
+          "close": "21:00"
+        }
+      ],
+      "items": [
+        {
+          "id": "appam-and-stew",
+          "name": "Appam and Stew",
+          "category": "Meal",
+          "price": 80,
+          "portion": "2 appam",
+          "diet": "veg"
+        },
+        {
+          "id": "sulaimani",
+          "name": "Sulaimani",
+          "category": "Tea",
+          "price": 12,
+          "diet": "vegan"
+        }
+      ]
+    }
+  ],
+  "last_confirmed": "2025-06-15"
+}

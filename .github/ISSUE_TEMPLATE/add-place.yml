@@ -1,27 +1,40 @@
 name: Add a place
-description: Add a tea stall or restaurant menu that you have seen yourself.
+description: Add a tea stall, cafe or restaurant menu that you have seen yourself.
 title: "Add place: "
 labels: ["add-place"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for helping. Please write the menu yourself from the board or card at the stall.
-        **Do not copy** from Google Maps, Zomato, Swiggy, other apps or websites, and do not copy OpenStreetMap tags or coordinates.
-        Do not include phone numbers, links, or anyone's personal details. A maintainer reviews every submission.
+        Thanks for helping. Write the menu yourself from the board, printed menu or bill at the place.
+        **Do not copy** from Google Maps, Zomato, Swiggy, other apps or websites, and do not copy OpenStreetMap tags, addresses or coordinates.
+        No phone numbers, links or anyone's personal details. A maintainer reviews every submission.
   - type: input
     id: name
     attributes:
-      label: Stall name
-      placeholder: Kaloor Junction Tea Stall
+      label: Place name
+      placeholder: Smart Foodie Kitchen
     validations:
       required: true
   - type: input
-    id: osm
+    id: local-name
     attributes:
-      label: OpenStreetMap link or ID
-      description: Open the place on openstreetmap.org, select it and copy the link (node, way or relation). Only the ID is stored.
-      placeholder: https://www.openstreetmap.org/node/123456
+      label: Name in the local script
+      description: Optional, e.g. in Malayalam.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind of place
+      options:
+        - Tea stall
+        - Cafe
+        - Restaurant
+        - Canteen
+        - Bakery
+        - Juice shop
+        - Food court stall
+        - Hotel (local eatery)
+        - Other
     validations:
       required: true
   - type: input
@@ -32,26 +45,98 @@ body:
       placeholder: in/kl/ernakulam
     validations:
       required: true
+  - type: input
+    id: osm
+    attributes:
+      label: OpenStreetMap link or ID
+      description: Open the place, or the building it is in, on openstreetmap.org and copy the link. Only the ID is stored. Leave empty if there is none.
+      placeholder: https://www.openstreetmap.org/way/1292036173
+  - type: dropdown
+    id: relation
+    attributes:
+      label: How the OpenStreetMap object relates to the place
+      options:
+        - This object is the place
+        - The place is inside this building or site
+        - The nearest landmark
+        - No OpenStreetMap object yet
+    validations:
+      required: true
+  - type: input
+    id: building
+    attributes:
+      label: Building or landmark
+      placeholder: Prestige Cyber Green, Phase 1
+  - type: input
+    id: floor
+    attributes:
+      label: Floor or unit
+      placeholder: Ground floor, food court
+  - type: input
+    id: area
+    attributes:
+      label: Area or locality
+      placeholder: Kakkanad
+  - type: input
+    id: postcode
+    attributes:
+      label: Postcode
+      placeholder: "682042"
+  - type: dropdown
+    id: tax
+    attributes:
+      label: Taxes
+      options:
+        - Prices include taxes
+        - Taxes are extra
+        - Not stated
+    validations:
+      required: true
   - type: textarea
     id: items
     attributes:
-      label: Menu items
+      label: Menu
       description: |
-        One item per line: `name | category | price`. Categories: Tea, Coffee, Snacks, Meal, Other.
-        Optional extra columns: `veg`, `non-veg`, `unavailable`. Prices in rupees, numbers only.
+        One item per line: `name | category | price`. Categories: Tea, Coffee, Drinks, Snacks, Meal, Dessert, Other.
+        Price can be a number, sizes like `Half 160, Full 200`, or `seasonal`, `market`, `ask`.
+        Optional columns: `veg`, `vegan`, `egg`, `non-veg`, `add-on`, `unavailable`, a portion like `2 pcs`, or `note: …`.
+        Start sections with `## Name` (add hours like `## Breakfast (08:00-12:00)`) and subsections with `### Name`.
+        Leave empty if you paste Menu JSON below.
       placeholder: |
-        Chai | Tea | 12
-        Filter Coffee | Coffee | 18
-        Pazham Pori | Snacks | 15 | veg
-        Fish Curry Meals | Meal | 140 | non-veg
-    validations:
-      required: true
+        ## Breakfast (08:00-12:00)
+        ### Breads
+        Appam | Meal | 20 | veg
+        Set Dosa | Meal | 60 | veg | 2 pcs
+        ## Lunch (12:00-16:00)
+        Chicken Biriyani | Meal | Half 160, Full 200 | non-veg
+        Fish Fry | Meal | seasonal | non-veg
+        ## Beverages
+        Tea | Tea | 15
+  - type: textarea
+    id: menu-json
+    attributes:
+      label: Menu JSON
+      description: |
+        Optional alternative to Menu: paste a menu as JSON with `categories` (each with `name`, optional `hours` like "08:00-12:00",
+        and `items` or `subcategories`), items `{ "name", "price", "notes" }`. Notes like "2 pcs", "half", "full", "add-on", "seasonal" are understood.
+      render: json
   - type: input
     id: seen
     attributes:
       label: Date the prices were seen
       description: YYYY-MM-DD. Not in the future.
       placeholder: "2026-11-12"
+    validations:
+      required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: How you saw the prices
+      options:
+        - In person
+        - Printed menu
+        - Menu board
+        - Bill
     validations:
       required: true
   - type: input

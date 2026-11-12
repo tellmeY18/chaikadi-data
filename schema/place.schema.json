@@ -1,51 +1,178 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://data.chaikadi.fyi/schema/place.schema.json",
-  "title": "Chaikadi menu library place (schemaVersion 1)",
-  "description": "One tea stall or restaurant menu. Data is CC0-1.0. OSM is referenced by ID only: no OSM tags or coordinates.",
+  "title": "Chaikadi menu library place (schemaVersion 2)",
+  "description": "One tea stall, cafe or restaurant and its menu. Data is CC0-1.0, written by contributors. OSM is referenced by type/id only: never copy OSM tags or coordinates.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "id", "name", "city", "currency", "menu", "last_confirmed"],
+  "required": ["schemaVersion", "id", "name", "city", "currency", "sections", "last_confirmed"],
   "properties": {
-    "schemaVersion": { "const": 1 },
+    "schemaVersion": { "const": 2 },
     "id": {
-      "description": "OpenStreetMap object reference, type/id. Must match the file name.",
-      "type": "string",
-      "pattern": "^(node|way|relation)/[1-9][0-9]{0,14}$"
+      "description": "Stable place id, unique within the city: lowercase slug. Must match the file name.",
+      "$ref": "#/definitions/slug"
     },
-    "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "name": { "$ref": "#/definitions/name" },
+    "localName": { "description": "Name in the local script, e.g. Malayalam.", "$ref": "#/definitions/name" },
     "city": {
       "description": "country/state/city slug. Must match the folder path.",
       "type": "string",
       "pattern": "^[a-z]{2}/[a-z0-9]+(?:-[a-z0-9]+)*/[a-z0-9]+(?:-[a-z0-9]+)*$"
     },
-    "currency": { "description": "ISO 4217 code", "type": "string", "pattern": "^[A-Z]{3}$" },
+    "kind": { "enum": ["tea-stall", "cafe", "restaurant", "canteen", "bakery", "juice-shop", "food-court-stall", "hotel", "other"] },
+    "osm": {
+      "description": "Optional OpenStreetMap reference. relation: is = this object is the place; inside = the place is inside this object (e.g. an office building); near = closest landmark.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "relation"],
+      "properties": {
+        "type": { "enum": ["node", "way", "relation"] },
+        "id": { "type": "integer", "minimum": 1, "maximum": 999999999999999 },
+        "relation": { "enum": ["is", "inside", "near"] }
+      }
+    },
     "wikidata": { "type": "string", "pattern": "^Q[1-9][0-9]{0,11}$" },
+    "location": {
+      "description": "Human directions written by the contributor (no coordinates, no copied OSM data).",
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "building": { "$ref": "#/definitions/text" },
+        "floor": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "area": { "$ref": "#/definitions/text" },
+        "postcode": { "type": "string", "pattern": "^[A-Z0-9][A-Z0-9 -]{1,9}$" }
+      }
+    },
+    "currency": { "description": "ISO 4217", "type": "string", "pattern": "^[A-Z]{3}$" },
+    "tax": {
+      "description": "What printed prices include. included: true = taxes included, false = taxes extra.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["included"],
+      "properties": {
+        "included": { "type": "boolean" },
+        "note": { "$ref": "#/definitions/note" }
+      }
+    },
+    "hours": { "description": "Opening hours of the place.", "$ref": "#/definitions/hours" },
+    "note": { "$ref": "#/definitions/note" },
     "sample": { "description": "Fictional sample data. Apps label it Sample.", "const": true },
-    "menu": {
+    "source": {
+      "description": "How the prices were confirmed.",
+      "enum": ["in-person", "printed-menu", "menu-board", "bill"]
+    },
+    "sections": {
       "type": "array",
       "minItems": 1,
-      "maxItems": 150,
-      "items": { "$ref": "#/definitions/item" }
+      "maxItems": 40,
+      "items": { "$ref": "#/definitions/section" }
     },
     "last_confirmed": {
-      "description": "ISO date when the prices were last confirmed in person.",
+      "description": "ISO date when the prices were last confirmed.",
       "type": "string",
       "format": "date"
     }
   },
   "definitions": {
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "minLength": 1, "maxLength": 60 },
+    "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "text": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "note": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "price": { "type": "number", "minimum": 0, "maximum": 100000, "multipleOf": 0.01 },
+    "time": { "type": "string", "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$|^24:00$" },
+    "hours": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 14,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["open", "close"],
+        "properties": {
+          "days": {
+            "description": "Omit for every day.",
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 7,
+            "uniqueItems": true,
+            "items": { "enum": ["mo", "tu", "we", "th", "fr", "sa", "su"] }
+          },
+          "open": { "$ref": "#/definitions/time" },
+          "close": { "$ref": "#/definitions/time" }
+        }
+      }
+    },
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "$ref": "#/definitions/slug" },
+        "name": { "$ref": "#/definitions/name" },
+        "hours": { "$ref": "#/definitions/hours" },
+        "note": { "$ref": "#/definitions/note" },
+        "items": { "type": "array", "minItems": 1, "maxItems": 150, "items": { "$ref": "#/definitions/item" } },
+        "sections": {
+          "description": "Subsections (one level deep).",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": { "$ref": "#/definitions/subsection" }
+        }
+      }
+    },
+    "subsection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "items"],
+      "properties": {
+        "id": { "$ref": "#/definitions/slug" },
+        "name": { "$ref": "#/definitions/name" },
+        "hours": { "$ref": "#/definitions/hours" },
+        "note": { "$ref": "#/definitions/note" },
+        "items": { "type": "array", "minItems": 1, "maxItems": 150, "items": { "$ref": "#/definitions/item" } }
+      }
+    },
     "item": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "name", "category", "price"],
+      "required": ["id", "name", "category"],
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 60 },
-        "name": { "type": "string", "minLength": 1, "maxLength": 80 },
-        "category": { "enum": ["Tea", "Coffee", "Snacks", "Meal", "Other"] },
-        "price": { "type": "number", "minimum": 0, "maximum": 10000, "multipleOf": 0.01 },
-        "veg": { "type": "boolean" },
-        "available": { "type": "boolean" }
+        "id": { "description": "Unique within the place.", "$ref": "#/definitions/slug" },
+        "name": { "$ref": "#/definitions/name" },
+        "localName": { "$ref": "#/definitions/name" },
+        "description": { "$ref": "#/definitions/note" },
+        "category": { "enum": ["Tea", "Coffee", "Drinks", "Snacks", "Meal", "Dessert", "Other"] },
+        "price": { "$ref": "#/definitions/price" },
+        "priceStatus": {
+          "description": "Set when there is no fixed price: market = changes daily, seasonal = only in season, ask = ask at the counter.",
+          "enum": ["market", "seasonal", "ask"]
+        },
+        "variants": {
+          "description": "Sizes or options with their own price, e.g. Half / Full.",
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "name", "price"],
+            "properties": {
+              "id": { "$ref": "#/definitions/slug" },
+              "name": { "type": "string", "minLength": 1, "maxLength": 40 },
+              "price": { "$ref": "#/definitions/price" },
+              "portion": { "type": "string", "minLength": 1, "maxLength": 40 }
+            }
+          }
+        },
+        "portion": { "description": "e.g. 2 pcs, 250 ml.", "type": "string", "minLength": 1, "maxLength": 40 },
+        "diet": { "enum": ["veg", "vegan", "egg", "non-veg"] },
+        "spice": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "addOn": { "description": "Only ordered together with something else.", "const": true },
+        "available": { "description": "false = currently not served.", "type": "boolean" },
+        "uncertain": { "description": "Name or price could not be read with confidence; explain in note.", "const": true },
+        "note": { "$ref": "#/definitions/note" }
       }
     }
   }

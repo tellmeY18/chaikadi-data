@@ -17,7 +17,7 @@ export function staleReport(places, { days = 180, date = todayUTC() } = {}) {
     lines.push(`### ${titleCase(city.split('/')[2])} (\`${city}\`)`, '', '| Place | ID | Last confirmed | Age | Status |', '| --- | --- | --- | --- | --- |');
     for (const p of old.filter(x => x.city === city)) {
       const name = p.name.replace(/[|\\`*_[\]<>]/g, c => `\\${c}`);
-      lines.push(`| ${name}${p.sample ? ' (sample)' : ''} | \`${p.id}\` | ${p.last_confirmed} | ${p.age} days | ${p.status === 'unverified' ? 'Not confirmed recently' : 'Prices may be old'} |`);
+      lines.push(`| ${name}${p.sample ? ' (sample)' : ''} | \`${p.city}/${p.id}\` | ${p.last_confirmed} | ${p.age} days | ${p.status === 'unverified' ? 'Not confirmed recently' : 'Prices may be old'} |`);
     }
     lines.push('');
   }

@@ -7,11 +7,13 @@ export const REPO = new URL('..', import.meta.url).pathname;
 
 export function place(overrides = {}) {
   return {
-    schemaVersion: 1, id: 'node/9000000000101', name: 'Test Stall', city: 'in/kl/ernakulam', currency: 'INR',
-    menu: [{ id: 'chai', name: 'Chai', category: 'Tea', price: 12, veg: true, available: true }],
+    schemaVersion: 2, id: 'test-stall', name: 'Test Stall', city: 'in/kl/ernakulam',
+    osm: { type: 'node', id: 9000000000101, relation: 'is' }, currency: 'INR',
+    sections: [{ id: 'tea', name: 'Tea', items: [{ id: 'chai', name: 'Chai', category: 'Tea', price: 12, diet: 'veg' }] }],
     last_confirmed: '2026-11-01', ...overrides,
   };
 }
+export const withItems = (items, overrides = {}) => place({ sections: [{ id: 'menu', name: 'Menu', items }], ...overrides });
 
 // A throwaway repo containing only the given place files (or raw text files).
 export function tempRepo(files = []) {

@@ -11,8 +11,8 @@ body:
     id: place-id
     attributes:
       label: Place ID
-      description: The OpenStreetMap ID shown in the app or file name, for example node/123456.
-      placeholder: node/123456
+      description: Shown in the app and in the file path, for example in/kl/ernakulam/smart-foodie-kitchen-cyber-green.
+      placeholder: in/kl/ernakulam/place-id
     validations:
       required: true
   - type: textarea
@@ -20,11 +20,14 @@ body:
     attributes:
       label: Changes
       description: |
-        One per line. Add or change an item: `name | category | price`. Remove an item: `name | remove`.
-        Items not listed stay as they are.
+        One per line. Add or change an item: `name | category | price` (price can be `Half 160, Full 200`, `seasonal`, `market` or `ask`;
+        optional columns `veg`, `egg`, `non-veg`, `add-on`, `unavailable`, `2 pcs`, `note: …`). Remove an item: `name | remove`.
+        New items go to the section named in a preceding `## Section` line, or to "Other items". Items not listed stay as they are.
       placeholder: |
-        Chai | Tea | 14
+        Tea | Tea | 18
         Bun Maska | remove
+        ## Snacks
+        Uzhunnu Vada | Snacks | 15 | veg
     validations:
       required: true
   - type: input
@@ -35,6 +38,15 @@ body:
       placeholder: "2026-11-12"
     validations:
       required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: How you saw the prices
+      options:
+        - In person
+        - Printed menu
+        - Menu board
+        - Bill
   - type: checkboxes
     id: consent
     attributes:
