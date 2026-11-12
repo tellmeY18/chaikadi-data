@@ -1,0 +1,75 @@
+name: Accepted issue to pull request
+
+# A maintainer adds the `accepted` label to an issue created from the
+# add-place or update-menu form. Only people with triage access can label.
+# The issue body is untrusted: it is read by Node from $GITHUB_EVENT_PATH and
+# never interpolated into shell. Only validated values become step outputs.
+on:
+  issues:
+    types: [labeled]
+
+permissions: {}
+
+concurrency:
+  group: issue-to-pr-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  convert:
+    if: >-
+      github.event.label.name == 'accepted' &&
+      (contains(github.event.issue.labels.*.name, 'add-place') ||
+       contains(github.event.issue.labels.*.name, 'update-menu'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Convert the issue form (untrusted input, parsed in Node)
+        id: convert
+        run: node scripts/issue-to-place.mjs --event "$GITHUB_EVENT_PATH" --work "$RUNNER_TEMP/issue"
+      - name: Validate the whole repository with the new file
+        if: steps.convert.outputs.ok == 'true'
+        run: node scripts/validate.mjs
+      - name: Commit to a bot branch and open a pull request
+        if: steps.convert.outputs.ok == 'true'
+        env:
+          NUMBER: ${{ steps.convert.outputs.number }}
+          PLACE_PATH: ${{ steps.convert.outputs.path }}
+        run: |
+          branch="data/issue-$NUMBER"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add -- "$PLACE_PATH"
+          git commit -m "Menu data from issue #$NUMBER"
+          git push --force origin "HEAD:refs/heads/$branch"
+          if gh pr view "$branch" --json number >/dev/null 2>&1; then
+            echo "Pull request already exists; branch updated."
+          else
+            gh pr create --base main --head "$branch" --title "$(cat "$RUNNER_TEMP/issue/pr-title.txt")" --body-file "$RUNNER_TEMP/issue/pr-body.md"
+          fi
+      - name: Explain the problems on the issue
+        if: steps.convert.outputs.ok == 'false'
+        env:
+          NUMBER: ${{ steps.convert.outputs.number }}
+        run: gh issue comment "$NUMBER" --body-file "$RUNNER_TEMP/issue/comment.md"
+      - name: Report an unexpected failure on the issue
+        if: failure()
+        env:
+          NUMBER: ${{ github.event.issue.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: gh issue comment "$NUMBER" --body "Automatic conversion failed. A maintainer can check the workflow log at $RUN_URL"

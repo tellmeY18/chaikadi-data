@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://data.chaikadi.fyi/schema/place.schema.json",
+  "title": "Chaikadi menu library place (schemaVersion 1)",
+  "description": "One tea stall or restaurant menu. Data is CC0-1.0. OSM is referenced by ID only: no OSM tags or coordinates.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "name", "city", "currency", "menu", "last_confirmed"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "id": {
+      "description": "OpenStreetMap object reference, type/id. Must match the file name.",
+      "type": "string",
+      "pattern": "^(node|way|relation)/[1-9][0-9]{0,14}$"
+    },
+    "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "city": {
+      "description": "country/state/city slug. Must match the folder path.",
+      "type": "string",
+      "pattern": "^[a-z]{2}/[a-z0-9]+(?:-[a-z0-9]+)*/[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "currency": { "description": "ISO 4217 code", "type": "string", "pattern": "^[A-Z]{3}$" },
+    "wikidata": { "type": "string", "pattern": "^Q[1-9][0-9]{0,11}$" },
+    "sample": { "description": "Fictional sample data. Apps label it Sample.", "const": true },
+    "menu": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 150,
+      "items": { "$ref": "#/definitions/item" }
+    },
+    "last_confirmed": {
+      "description": "ISO date when the prices were last confirmed in person.",
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "definitions": {
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "category", "price"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 60 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "category": { "enum": ["Tea", "Coffee", "Snacks", "Meal", "Other"] },
+        "price": { "type": "number", "minimum": 0, "maximum": 10000, "multipleOf": 0.01 },
+        "veg": { "type": "boolean" },
+        "available": { "type": "boolean" }
+      }
+    }
+  }
+}

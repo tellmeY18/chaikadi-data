@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "id": "way/9000000000003",
+  "name": "Sample Meals Hotel, Fort Kochi",
+  "city": "in/kl/ernakulam",
+  "currency": "INR",
+  "sample": true,
+  "menu": [
+    {
+      "id": "kerala-meals",
+      "name": "Kerala Meals",
+      "category": "Meal",
+      "price": 90,
+      "veg": true,
+      "available": true
+    },
+    {
+      "id": "fish-curry-meals",
+      "name": "Fish Curry Meals",
+      "category": "Meal",
+      "price": 140,
+      "veg": false,
+      "available": true
+    },
+    {
+      "id": "appam-and-stew",
+      "name": "Appam and Stew",
+      "category": "Meal",
+      "price": 80,
+      "veg": true,
+      "available": true
+    },
+    {
+      "id": "sulaimani",
+      "name": "Sulaimani",
+      "category": "Tea",
+      "price": 12,
+      "veg": true,
+      "available": true
+    }
+  ],
+  "last_confirmed": "2025-06-15"
+}

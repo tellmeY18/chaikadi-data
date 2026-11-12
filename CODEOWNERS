@@ -1,0 +1,17 @@
+# Code owners request review automatically on pull requests.
+# Replace the placeholder handles with real maintainers before enabling
+# "Require review from Code Owners" in branch protection.
+
+# Fallback: everything
+*                           @tellmeY18
+
+# Tooling, schema and workflows
+/scripts/                   @tellmeY18
+/schema/                    @tellmeY18
+/.github/                   @tellmeY18
+
+# Per-region maintainers (placeholders, uncomment and edit)
+# /places/in/kl/            @kerala-menu-maintainer
+# /places/in/kl/ernakulam/  @ernakulam-menu-maintainer
+# /places/in/ka/            @karnataka-menu-maintainer
+# /places/in/tn/            @tamil-nadu-menu-maintainer

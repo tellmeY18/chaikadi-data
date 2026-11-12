@@ -1,0 +1,45 @@
+name: Validate
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install (no lifecycle scripts)
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Tests
+        run: npm test
+      - name: Validate changed place files
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: node scripts/validate.mjs --changed "$BASE_SHA"
+      - name: Validate all place files
+        run: node scripts/validate.mjs
+      - name: Build and check size budgets
+        run: |
+          {
+            echo '### Build'
+            echo '```'
+            node scripts/build.mjs --out "$RUNNER_TEMP/dist"
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,44 @@
+name: Update a menu
+description: Report new prices, new items or removed items for a place already in the library.
+title: "Update menu: "
+labels: ["update-menu"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Write only what you saw yourself. Do not copy from apps or websites. No personal details, phone numbers or links.
+  - type: input
+    id: place-id
+    attributes:
+      label: Place ID
+      description: The OpenStreetMap ID shown in the app or file name, for example node/123456.
+      placeholder: node/123456
+    validations:
+      required: true
+  - type: textarea
+    id: changes
+    attributes:
+      label: Changes
+      description: |
+        One per line. Add or change an item: `name | category | price`. Remove an item: `name | remove`.
+        Items not listed stay as they are.
+      placeholder: |
+        Chai | Tea | 14
+        Bun Maska | remove
+    validations:
+      required: true
+  - type: input
+    id: date-seen
+    attributes:
+      label: Date the prices were seen
+      description: YYYY-MM-DD. Not in the future.
+      placeholder: "2026-11-12"
+    validations:
+      required: true
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Licence
+      options:
+        - label: I made this data myself and release it under CC0
+          required: true

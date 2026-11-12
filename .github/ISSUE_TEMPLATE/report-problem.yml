@@ -1,0 +1,31 @@
+name: Report a problem
+description: Wrong data, a closed place, copied data, personal data, or anything else.
+title: "Problem: "
+labels: ["problem"]
+body:
+  - type: input
+    id: place-id
+    attributes:
+      label: Place ID
+      description: Optional, for example node/123456.
+      placeholder: node/123456
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind of problem
+      options:
+        - Wrong or outdated price
+        - Place closed or moved
+        - Data copied from another app or website
+        - Personal data in the repository
+        - Website or data file problem
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: What is wrong? Please do not include personal details. Security issues should be reported privately to the maintainers.
+    validations:
+      required: true

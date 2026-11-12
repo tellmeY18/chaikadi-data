@@ -1,0 +1,46 @@
+name: Stale menus report
+
+on:
+  schedule:
+    - cron: "41 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stale-report
+  cancel-in-progress: true
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Write report
+        run: node scripts/stale-report.mjs --days 180 --out "$RUNNER_TEMP/stale.md"
+      - name: Create or update the single pinned issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          REPORT: ${{ runner.temp }}/stale.md
+        run: |
+          gh label create stale-report --color EDEDED --description "Weekly stale menus report" --force
+          number="$(gh issue list --state open --label stale-report --limit 1 --json number --jq '.[0].number // empty')"
+          if [ -z "$number" ]; then
+            url="$(gh issue create --title "Stale menus report" --label stale-report --body-file "$REPORT")"
+            gh issue pin "$url" || echo "::warning::Could not pin the report issue; pin it once by hand."
+          else
+            gh issue edit "$number" --title "Stale menus report" --body-file "$REPORT"
+          fi

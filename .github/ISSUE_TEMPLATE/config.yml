@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Chaikadi app
+    url: https://chaikadi.fyi
+    about: Use menus from this library in the Chaikadi app.
+  - name: Chaikadi app source and issues
+    url: https://github.com/tellmeY18/chaikadi.fyi/issues
+    about: Report app bugs (not menu data) here.

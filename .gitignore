@@ -1,0 +1,4 @@
+node_modules/
+dist/
+.issue-work/
+.DS_Store

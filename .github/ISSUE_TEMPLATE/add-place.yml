@@ -1,0 +1,69 @@
+name: Add a place
+description: Add a tea stall or restaurant menu that you have seen yourself.
+title: "Add place: "
+labels: ["add-place"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping. Please write the menu yourself from the board or card at the stall.
+        **Do not copy** from Google Maps, Zomato, Swiggy, other apps or websites, and do not copy OpenStreetMap tags or coordinates.
+        Do not include phone numbers, links, or anyone's personal details. A maintainer reviews every submission.
+  - type: input
+    id: name
+    attributes:
+      label: Stall name
+      placeholder: Kaloor Junction Tea Stall
+    validations:
+      required: true
+  - type: input
+    id: osm
+    attributes:
+      label: OpenStreetMap link or ID
+      description: Open the place on openstreetmap.org, select it and copy the link (node, way or relation). Only the ID is stored.
+      placeholder: https://www.openstreetmap.org/node/123456
+    validations:
+      required: true
+  - type: input
+    id: city
+    attributes:
+      label: City
+      description: country/state/city in lowercase, for example in/kl/ernakulam.
+      placeholder: in/kl/ernakulam
+    validations:
+      required: true
+  - type: textarea
+    id: items
+    attributes:
+      label: Menu items
+      description: |
+        One item per line: `name | category | price`. Categories: Tea, Coffee, Snacks, Meal, Other.
+        Optional extra columns: `veg`, `non-veg`, `unavailable`. Prices in rupees, numbers only.
+      placeholder: |
+        Chai | Tea | 12
+        Filter Coffee | Coffee | 18
+        Pazham Pori | Snacks | 15 | veg
+        Fish Curry Meals | Meal | 140 | non-veg
+    validations:
+      required: true
+  - type: input
+    id: seen
+    attributes:
+      label: Date the prices were seen
+      description: YYYY-MM-DD. Not in the future.
+      placeholder: "2026-11-12"
+    validations:
+      required: true
+  - type: input
+    id: wikidata
+    attributes:
+      label: Wikidata ID
+      description: Optional, only if the place really has a Wikidata item.
+      placeholder: Q12345
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Licence
+      options:
+        - label: I made this data myself and release it under CC0
+          required: true
